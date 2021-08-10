@@ -4,6 +4,9 @@ import { Task } from './models'
 import * as taskDo from './store/actions/tasks'
 import { Store } from './store/models'
 import { getId } from './utils'
+import Player from './components/player/player'
+import videos from './videos.json'
+import { OnlyClip, OnlyPlaylist } from './components/player/types'
 
 type TaskListProps = {
   tasks: Task[]
@@ -48,9 +51,12 @@ export default function App() {
 
   const onChange = (key: 'title' | 'description', value: string) => setTask(prev => ({ ...prev, [key]: value }))
 
+  const videoYT: OnlyClip = { ...videos.youtube, __mode: 'clip' }
+  const videoMP4: OnlyClip = { ...videos.mp4, __mode: 'clip' }
+  const playlist: OnlyPlaylist = { ...videos.playlist, __mode: 'playlist' }
   return (
     <div>
-      <h1>Todo app</h1>
+      {/* <h1>Todo app</h1>
       <input type="text" placeholder={'Title'} value={task.title} onChange={e => onChange('title', e.target.value)} />
       <input
         type="text"
@@ -60,7 +66,10 @@ export default function App() {
       />
       <button onClick={handleCommit}>{'>'}</button>
 
-      <TasksList tasks={tasks} />
+      <TasksList tasks={tasks} /> */}
+
+      <Player {...videoYT} />
+      <Player {...videoMP4} />
     </div>
   )
 }
