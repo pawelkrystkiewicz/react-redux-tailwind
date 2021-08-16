@@ -18,8 +18,8 @@ or
 
 
 #### Stack
-|          🩺 |  🔌 |
-|----------------- |------------|
+| 🩺               | 🔌         |
+|------------------|------------|
 | Language         | TypeScript |
 | Framework        | React      |
 | State management | Redux      |

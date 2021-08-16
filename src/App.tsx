@@ -4,9 +4,10 @@ import { Task } from './models'
 import * as taskDo from './store/actions/tasks'
 import { Store } from './store/models'
 import { getId } from './utils'
-import Player from './components/player/player'
+
 import videos from './videos.json'
 import { OnlyClip, OnlyPlaylist } from './components/player/types'
+import Player from './components/player/Player'
 
 type TaskListProps = {
   tasks: Task[]
@@ -49,10 +50,15 @@ export default function App() {
     }
   }
 
-  const onChange = (key: 'title' | 'description', value: string) => setTask(prev => ({ ...prev, [key]: value }))
+  const onChange = (key: 'title' | 'description', value: string) =>
+    setTask(prev => ({ ...prev, [key]: value }))
 
   const videoYT: OnlyClip = { ...videos.youtube, __mode: 'clip' }
   const videoMP4: OnlyClip = { ...videos.mp4, __mode: 'clip' }
+  const videoYTNoChapters: OnlyClip = {
+    ...videos.youtube_without_chapters,
+    __mode: 'clip',
+  }
   const playlist: OnlyPlaylist = { ...videos.playlist, __mode: 'playlist' }
   return (
     <div>
@@ -70,6 +76,7 @@ export default function App() {
 
       <Player {...videoYT} />
       <Player {...videoMP4} />
+      <Player {...videoYTNoChapters} />
     </div>
   )
 }

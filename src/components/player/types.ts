@@ -17,9 +17,10 @@ export type PlayerState = PlayerProgress & {
   muted: boolean
   playbackRate: number
   volume: number
+  prevVolume: number
   loop: boolean
   seeking: boolean
-  buffered: number
+  buffering: boolean
 }
 
 export type Marks = { [key: number]: string }
@@ -41,7 +42,7 @@ export type OnlyPlaylist = {
 export type Clip = {
   title: string
   url: string
-  chapters: Chapter[]
+  chapters?: Chapter[]
 }
 
 export type PlaylistElement = {
@@ -57,17 +58,11 @@ export type Chapter = {
   end: number
 }
 
-export enum KeyCode {
-  enter = 'Enter',
-  space = 'Space',
-  arrowUp = 'ArrowUp',
-  arrowDown = 'ArrowDown',
-  arrowLeft = 'ArrowLeft',
-  arrowRight = 'ArrowRight',
-}
+export type MeasuredChapter = Chapter & { runtime: number; size: number }
 
 export type SliderCommonProps = {
   value: number
   background?: string
   direction?: Direction
+  z?: number
 }

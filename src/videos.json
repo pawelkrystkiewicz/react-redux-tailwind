@@ -73,6 +73,13 @@
       ]
     }
   },
+  "youtube_without_chapters": {
+    "playlist": null,
+    "clip": {
+      "title": "YouTube video",
+      "url": "https://youtu.be/K4THpdaJoQI?list=PLd5GCd1nrmcy5CCUz2x9hVE2bo2L0RKsQ"
+    }
+  },
   "mp4": {
     "playlist": null,
     "clip": {
