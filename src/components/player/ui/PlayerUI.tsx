@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import VolumeBar from '../VolumeBar'
+
 type StyledDIV = React.HTMLAttributes<HTMLDivElement>
 
 export const Container: React.FunctionComponent<StyledDIV> = styled.div`
@@ -10,11 +10,10 @@ export const Container: React.FunctionComponent<StyledDIV> = styled.div`
 `
 export const Body: React.FunctionComponent<StyledDIV> = styled.div`
   position: relative;
-  &:hover {
-    ${Container} {
-      opacity: 1;
-    }
+  &:hover ${Container} {
+    opacity: 1;
   }
+
   ${Container} {
     opacity: 0;
     transition: opacity 0.1s linear;
@@ -26,18 +25,11 @@ export const Body: React.FunctionComponent<StyledDIV> = styled.div`
 
 export const VolumeBarWrapper: React.FunctionComponent<StyledDIV> = styled.div`
   width: 0;
-  max-width: 50px;
   height: 4px;
-  display: none;
+  opacity: 0;
+  transition: all 0.2s 0.2s ease-in-out;
 `
-export const VolumeControls: React.FunctionComponent<StyledDIV> = styled.div`
-  &:hover {
-    ${VolumeBarWrapper} {
-      width: 50px;
-      display: block;
-    }
-  }
-`
+export const VolumeControls: React.FunctionComponent<StyledDIV> = styled.div``
 export const Controls: React.FunctionComponent<StyledDIV> = styled.div`
   bottom: 0;
   width: 100%;
@@ -55,10 +47,9 @@ export const Controls: React.FunctionComponent<StyledDIV> = styled.div`
   align-items: center;
   align-content: center;
 
-  ${VolumeControls} {
-    &:hover {
-      transition: width 0.2s linear;
-    }
+  &:hover ${VolumeControls} ~ ${VolumeBarWrapper} {
+    width: 50px;
+    opacity: 1;
   }
 `
 

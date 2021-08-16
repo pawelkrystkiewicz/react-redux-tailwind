@@ -12,7 +12,7 @@ const VolumeBar = ({ volume, onChange }: VolumeBarProps) => (
   <Slider
     direction={Direction.HORIZONTAL}
     onChange={onChange}
-    style={{ width: '100%', height: 4 }}
+    style={{ width: '100%', height: 4, transition: 'width 0.1s linear' }}
   >
     <StyledSlider.Bar value={1} background={COLORS.GREY_ALPHA} />
     <StyledSlider.Bar value={volume} background={COLORS.WHITE} />
