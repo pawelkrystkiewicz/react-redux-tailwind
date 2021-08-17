@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Direction, Slider } from 'react-player-controls'
 import { MeasuredChapter } from './types'
 import { COLORS } from './ui/colors'
@@ -31,6 +31,8 @@ const SeekerBar = ({
   const [lastIntent, setLastIntent] = useState(0)
   const hasChapters = chapters.length > 0
 
+  const set0 = useCallback(() => setLastIntent(0), [])
+
   return (
     <Slider
       direction={Direction.HORIZONTAL}
@@ -39,13 +41,11 @@ const SeekerBar = ({
         height: 4,
         borderRadius: 0,
         transition: 'width 0.1s',
-        '&:hover': {
-          transform: 'scale(1.5)',
-        },
+        flex: '1 100%',
       }}
       onIntent={setLastIntent}
       onIntentStart={setLastIntent}
-      onIntentEnd={setLastIntent.bind(0)}
+      onIntentEnd={set0}
       onChange={onChange}
       onChangeStart={onChangeStart}
       onChangeEnd={onChangeEnd}
@@ -93,7 +93,7 @@ const ChaptersProgressBar = ({
 
   return (
     <ChaptersContainer>
-      {finishedChapters.map(({ size }, index) => (
+      {finishedChapters.map(({ size }) => (
         <Chapter value={size} background={YT_RED} />
       ))}
       <Chapter value={current - chaptersLengthPercent} background={YT_RED} />

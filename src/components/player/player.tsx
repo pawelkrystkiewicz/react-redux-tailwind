@@ -1,20 +1,20 @@
-import { FullscreenOutlined } from '@material-ui/icons'
 import React, { useRef, useState } from 'react'
 import { Button } from 'react-player-controls'
 import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy'
-import ChapterList from './ChaptersList'
+import ChaptersList from './ChaptersList'
 import {
   getCurrentChapter,
   getFormattedTime,
   measureChapters,
   toProgressPercent,
 } from './helper'
-import { ReactComponent as PauseIcon } from './icons/pause_white_24dp.svg'
-import { ReactComponent as PlayIcon } from './icons/play_arrow_white_24dp.svg'
-import { ReactComponent as SettingsIcon } from './icons/settings_white_24dp.svg'
-import { ReactComponent as VolumeHalfIcon } from './icons/volume_down_white_24dp.svg'
-import { ReactComponent as VolumeMutedIcon } from './icons/volume_off_white_24dp.svg'
-import { ReactComponent as VolumeFullIcon } from './icons/volume_up_white_24dp.svg'
+import { ReactComponent as PauseIcon } from './icons/pause.svg'
+import { ReactComponent as PlayIcon } from './icons/play.svg'
+import { ReactComponent as SettingsIcon } from './icons/settings.svg'
+import { ReactComponent as FullScreenIcon } from './icons/fullscreen.svg'
+import { ReactComponent as VolumeHalfIcon } from './icons/volume-half.svg'
+import { ReactComponent as VolumeMutedIcon } from './icons/volume-muted.svg'
+import { ReactComponent as VolumeFullIcon } from './icons/volume-full.svg'
 import SeekerBar from './SeekerBar'
 import { KeyCode } from './shortcuts'
 import VolumeBar from './VolumeBar'
@@ -201,17 +201,28 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
               onChangeStart={handleSeekerChangeStart}
               playedSeconds={state.playedSeconds}
             />
-            <Controls
-              state={state}
-              currentChapter={currentChapter}
-              onTogglePlay={togglePlay}
-              onToggleMute={toggleMute}
-              onVolumeChange={changeVolume}
-            />
+            <PlayerUI.ControlPanel>
+              <Controls
+                state={state}
+                currentChapter={currentChapter}
+                onTogglePlay={togglePlay}
+                onToggleMute={toggleMute}
+                onVolumeChange={changeVolume}
+              />
+
+              <PlayerUI.Settings>
+                <PlayerUI.Button>
+                  <SettingsIcon />
+                </PlayerUI.Button>
+                <PlayerUI.Button>
+                  <FullScreenIcon />
+                </PlayerUI.Button>
+              </PlayerUI.Settings>
+            </PlayerUI.ControlPanel>
           </PlayerUI.Container>
         </PlayerUI.Body>
 
-        <ChapterList
+        <ChaptersList
           chapters={chapters}
           played={state.playedSeconds}
           goToChapter={seekInVideo}
@@ -233,46 +244,37 @@ const Controls = ({
   onVolumeChange,
 }) => {
   return (
-    <PlayerUI.Controls>
-      <Button
-        onClick={onTogglePlay}
-        style={{ height: 46, width: 40, padding: 10 }}
-      >
-        {state.playing ? <PauseIcon /> : <PlayIcon />}
-      </Button>
-      <PlayerUI.VolumeControls>
-        <Button
-          onClick={onToggleMute}
-          style={{ height: 46, width: 40, padding: 10 }}
-        >
-          {!state.volume ? (
-            <VolumeMutedIcon />
-          ) : state.volume >= 0.5 ? (
-            <VolumeFullIcon />
-          ) : (
-            <VolumeHalfIcon />
-          )}
-        </Button>
-      </PlayerUI.VolumeControls>
-      <PlayerUI.VolumeBarWrapper>
-        <VolumeBar volume={state.volume} onChange={onVolumeChange} />
-      </PlayerUI.VolumeBarWrapper>
-      <TimeTracker
-        playedSeconds={state.playedSeconds}
-        duration={state.duration}
-      />
+    <>
+      <PlayerUI.Controls>
+        <PlayerUI.Button onClick={onTogglePlay}>
+          {state.playing ? <PauseIcon /> : <PlayIcon />}
+        </PlayerUI.Button>
+
+        <PlayerUI.VolumeControls>
+          <PlayerUI.Button onClick={onToggleMute}>
+            {!state.volume ? (
+              <VolumeMutedIcon />
+            ) : state.volume >= 0.5 ? (
+              <VolumeFullIcon />
+            ) : (
+              <VolumeHalfIcon />
+            )}
+          </PlayerUI.Button>
+        </PlayerUI.VolumeControls>
+        <PlayerUI.VolumeBarWrapper>
+          <VolumeBar volume={state.volume} onChange={onVolumeChange} />
+        </PlayerUI.VolumeBarWrapper>
+        <TimeTracker
+          playedSeconds={state.playedSeconds}
+          duration={state.duration}
+        />
+      </PlayerUI.Controls>
       <PlayerUI.Chapters>
         {currentChapter && (
-          <>
-            &nbsp;&#183;&nbsp;
-            <span>{currentChapter.title.substring(0, 50) + '...'}</span>
-          </>
+          <span>&nbsp;&#183;&nbsp;{currentChapter.title}</span>
         )}
       </PlayerUI.Chapters>
-
-      <SettingsIcon />
-      <FullscreenOutlined />
-    </PlayerUI.Controls>
+    </>
   )
 }
 interface TimeTrackerProps {
@@ -282,7 +284,7 @@ interface TimeTrackerProps {
 
 const TimeTracker = ({ playedSeconds, duration }: TimeTrackerProps) => (
   <span>
-    {getFormattedTime(playedSeconds)}/{getFormattedTime(duration)}
+    {getFormattedTime(playedSeconds)}&nbsp;/&nbsp;{getFormattedTime(duration)}
   </span>
 )
 

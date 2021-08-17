@@ -8,7 +8,7 @@ import { getId } from './utils'
 import videos from './videos.json'
 import { OnlyClip, OnlyPlaylist } from './components/player/types'
 import Player from './components/player/Player'
-
+import LagRadar from 'react-lag-radar'
 type TaskListProps = {
   tasks: Task[]
 }
@@ -62,6 +62,15 @@ export default function App() {
   const playlist: OnlyPlaylist = { ...videos.playlist, __mode: 'playlist' }
   return (
     <div>
+      <div
+        style={{
+          position: 'absolute',
+          top: 50,
+          right: 50,
+        }}
+      >
+        <LagRadar size={350} frames={60} />
+      </div>
       {/* <h1>Todo app</h1>
       <input type="text" placeholder={'Title'} value={task.title} onChange={e => onChange('title', e.target.value)} />
       <input
