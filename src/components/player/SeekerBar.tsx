@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import { Direction, Slider } from 'react-player-controls'
-import { MeasuredChapter } from './types'
+import { MeasuredChapter } from './types/types'
 import { COLORS } from './ui/colors'
 import { Bar, Chapter, ChaptersContainer, Dot } from './ui/Sliders'
 
@@ -11,6 +11,7 @@ interface ChaptersProgressBarProps {
   current: number
   playedSeconds: number
 }
+
 interface SeekerBarProps {
   current: number
   chapters: MeasuredChapter[]

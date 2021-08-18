@@ -1,27 +1,21 @@
 import React, { useRef, useState } from 'react'
-import { Button } from 'react-player-controls'
 import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy'
 import ChaptersList from './ChaptersList'
-import {
-  getCurrentChapter,
-  getFormattedTime,
-  measureChapters,
-  toProgressPercent,
-} from './helper'
+import Controls from './Controls'
+import { getCurrentChapter, measureChapters, toProgressPercent } from './helper'
 import { ReactComponent as PauseIcon } from './icons/pause.svg'
 import { ReactComponent as PlayIcon } from './icons/play.svg'
-import { ReactComponent as SettingsIcon } from './icons/settings.svg'
-import { ReactComponent as FullScreenIcon } from './icons/fullscreen.svg'
+import { ReactComponent as VolumeFullIcon } from './icons/volume-full.svg'
 import { ReactComponent as VolumeHalfIcon } from './icons/volume-half.svg'
 import { ReactComponent as VolumeMutedIcon } from './icons/volume-muted.svg'
-import { ReactComponent as VolumeFullIcon } from './icons/volume-full.svg'
 import SeekerBar from './SeekerBar'
+import Settings from './Settings'
 import { KeyCode } from './shortcuts'
-import VolumeBar from './VolumeBar'
-import { PlayerConfig, PlayerProgress, PlayerState } from './types'
+import TimeTracker from './TimeTracker'
+import { PlayerConfig, PlayerProgress, PlayerState } from './types/types'
 import { PlayerContainer } from './ui/Container'
-
 import * as PlayerUI from './ui/PlayerUI'
+import VolumeBar from './VolumeBar'
 
 const VOLUME_STEP = 0.05
 const REWIND_STEP = 5
@@ -150,6 +144,7 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
 
   /* CONFIG react-player */
   const playerConfig: Partial<ReactPlayerProps> = {
+    style: { pointerEvents: 'none' },
     ref: playerRef,
     fallback: <span>Loading...</span>,
     stopOnUnmount: true,
@@ -158,7 +153,7 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     onBuffer,
     onBufferEnd,
     onEnded,
-    onClick: togglePlay,
+
     youtube: {
       embedOptions: {},
       playerVars: {
@@ -182,16 +177,18 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
         {title && <h2>{title}</h2>}
 
         <PlayerUI.Body>
-          <ReactPlayer
-            {...playerConfig}
-            url={url}
-            playing={state.playing}
-            controls={state.controls}
-            playbackRate={state.playbackRate}
-            volume={state.volume}
-            muted={state.muted}
-            config={playerConfig.config}
-          />
+          <PlayerUI.ClickCatcher onClick={togglePlay}>
+            <ReactPlayer
+              {...playerConfig}
+              url={url}
+              playing={state.playing}
+              controls={state.controls}
+              playbackRate={state.playbackRate}
+              volume={state.volume}
+              muted={state.muted}
+              config={playerConfig.config}
+            />
+          </PlayerUI.ClickCatcher>
           <PlayerUI.Container>
             <SeekerBar
               current={state.current}
@@ -209,19 +206,10 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
                 onToggleMute={toggleMute}
                 onVolumeChange={changeVolume}
               />
-
-              <PlayerUI.Settings>
-                <PlayerUI.Button>
-                  <SettingsIcon />
-                </PlayerUI.Button>
-                <PlayerUI.Button>
-                  <FullScreenIcon />
-                </PlayerUI.Button>
-              </PlayerUI.Settings>
+              <Settings />
             </PlayerUI.ControlPanel>
           </PlayerUI.Container>
         </PlayerUI.Body>
-
         <ChaptersList
           chapters={chapters}
           played={state.playedSeconds}
@@ -235,57 +223,5 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     <div>{"You can't reach this | TypeScript is stupid sometimes :)"} </div>
   )
 }
-
-const Controls = ({
-  state,
-  currentChapter,
-  onTogglePlay,
-  onToggleMute,
-  onVolumeChange,
-}) => {
-  return (
-    <>
-      <PlayerUI.Controls>
-        <PlayerUI.Button onClick={onTogglePlay}>
-          {state.playing ? <PauseIcon /> : <PlayIcon />}
-        </PlayerUI.Button>
-
-        <PlayerUI.VolumeControls>
-          <PlayerUI.Button onClick={onToggleMute}>
-            {!state.volume ? (
-              <VolumeMutedIcon />
-            ) : state.volume >= 0.5 ? (
-              <VolumeFullIcon />
-            ) : (
-              <VolumeHalfIcon />
-            )}
-          </PlayerUI.Button>
-        </PlayerUI.VolumeControls>
-        <PlayerUI.VolumeBarWrapper>
-          <VolumeBar volume={state.volume} onChange={onVolumeChange} />
-        </PlayerUI.VolumeBarWrapper>
-        <TimeTracker
-          playedSeconds={state.playedSeconds}
-          duration={state.duration}
-        />
-      </PlayerUI.Controls>
-      <PlayerUI.Chapters>
-        {currentChapter && (
-          <span>&nbsp;&#183;&nbsp;{currentChapter.title}</span>
-        )}
-      </PlayerUI.Chapters>
-    </>
-  )
-}
-interface TimeTrackerProps {
-  playedSeconds: number
-  duration: number
-}
-
-const TimeTracker = ({ playedSeconds, duration }: TimeTrackerProps) => (
-  <span>
-    {getFormattedTime(playedSeconds)}&nbsp;/&nbsp;{getFormattedTime(duration)}
-  </span>
-)
 
 export default Player

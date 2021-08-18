@@ -1,27 +1,35 @@
-import React from 'react'
-import { FormattedTime } from 'react-player-controls'
+import React, { useCallback } from 'react'
+import FormattedTime from './FormattedTime'
 import { isCurrentInChapterRange } from './helper'
+import * as Chapters from './ui/ChapterList'
 
 const ChapterList = ({ played, chapters, goToChapter }) => {
   return (
-    <React.Fragment key="chapters">
-      <table className="player__chapters">
-        {chapters.map(c => (
-          <tr>
-            <td>{isCurrentInChapterRange(played)(c) && <span className="player__chapters--current-dot" />}</td>
-            <td>
-              <span onClick={() => goToChapter(c.start)} className="player__chapters--timestamp interactive">
-                {<FormattedTime numSeconds={c.start} />}
-              </span>
-            </td>
+    <Chapters.List>
+      {chapters.map(chapter => (
+        <Entry chapter={chapter} played={played} goToChapter={goToChapter} />
+      ))}
+    </Chapters.List>
+  )
+}
 
-            <td>
-              <span>{c.title}</span>
-            </td>
-          </tr>
-        ))}
-      </table>
-    </React.Fragment>
+const Entry = ({ goToChapter, played, chapter }) => {
+  const { start, title } = chapter
+
+  const goToChapterCallback = useCallback(
+    () => goToChapter(start),
+    [start, goToChapter]
+  )
+
+  const isCurrent = isCurrentInChapterRange(played)(chapter)
+
+  return (
+    <Chapters.List>
+      <Chapters.Timestamp onClick={goToChapterCallback} showMarker={isCurrent}>
+        <FormattedTime seconds={start} />
+      </Chapters.Timestamp>
+      <Chapters.Title>{title}</Chapters.Title>
+    </Chapters.List>
   )
 }
 

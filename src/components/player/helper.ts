@@ -1,4 +1,4 @@
-import { Marks, Chapter, MeasuredChapter } from './types'
+import { Marks, Chapter, MeasuredChapter } from './types/types'
 
 export const formatDuration = (seconds: number): string => {
   const formatted = new Date(seconds * 1000)

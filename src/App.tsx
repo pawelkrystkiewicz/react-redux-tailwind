@@ -6,7 +6,7 @@ import { Store } from './store/models'
 import { getId } from './utils'
 
 import videos from './videos.json'
-import { OnlyClip, OnlyPlaylist } from './components/player/types'
+import { OnlyClip, OnlyPlaylist } from './components/player/types/types'
 import Player from './components/player/Player'
 import LagRadar from 'react-lag-radar'
 type TaskListProps = {

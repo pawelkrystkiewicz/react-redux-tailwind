@@ -2,10 +2,9 @@ import React from 'react'
 import { Direction } from 'react-player-controls'
 import styled from 'styled-components'
 import { toProgressPercent } from '../helper'
-import { SliderCommonProps } from '../types'
+import { StyledDIV } from '../types/styled'
+import { SliderCommonProps } from '../types/types'
 import { COLORS, CONSTANTS as C } from './colors'
-
-type StyledDIV = React.HTMLAttributes<HTMLDivElement>
 
 type DotProps = StyledDIV & SliderCommonProps
 type BarProps = StyledDIV & SliderCommonProps

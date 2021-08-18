@@ -18,7 +18,7 @@ export const Body: React.FunctionComponent<StyledDIV> = styled.div`
 
   ${Container} {
     opacity: 0;
-    transition: opacity 0.1s linear;
+    transition: opacity 0.1s cubic-bezier(0.4, 0, 1, 1);
   }
 
   color: #fff;
@@ -100,7 +100,6 @@ type PlayerButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
 }
 
 export const Button: React.FunctionComponent<PlayerButtonProps> = styled.button`
-  height: 100%;
   height: 40px;
   width: 46px;
   flex: 0 0 auto;
@@ -109,3 +108,9 @@ export const Button: React.FunctionComponent<PlayerButtonProps> = styled.button`
   ${({ icon }: PlayerButtonProps) =>
     !icon ? `` : `::before {content: url("icons/${icon}.svg");}`}
 `
+
+export const TimeTracker: React.FunctionComponent<PlayerButtonProps> = styled.button`
+  padding: 0 2px;
+`
+
+export const ClickCatcher: React.FunctionComponent<StyledDIV> = styled.div``

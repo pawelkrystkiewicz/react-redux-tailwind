@@ -4,6 +4,7 @@ export const COLORS = {
   BLACK_ALPHA: 'rgba(0, 0, 0, 0.2)',
   BLUE: 'rgba(0, 0, 0, 0.2)',
   WHITE: '#FFF',
+  THEME_COLOR:"#1953a8"
 }
 
 export const CONSTANTS = {
