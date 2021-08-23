@@ -11,4 +11,6 @@ export enum KeyCode {
   M = 'KeyM', //mute
   N = 'KeyN', //next
   P = 'KeyP', //previous
+  Home = 'Home', //jump to start
+  End = 'End', //jump to end
 }

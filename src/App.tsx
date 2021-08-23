@@ -86,6 +86,7 @@ export default function App() {
       <Player {...videoYT} />
       <Player {...videoMP4} />
       <Player {...videoYTNoChapters} />
+      <Player {...playlist} />
     </div>
   )
 }

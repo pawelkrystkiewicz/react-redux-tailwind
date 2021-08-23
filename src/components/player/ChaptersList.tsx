@@ -24,12 +24,12 @@ const Entry = ({ goToChapter, played, chapter }) => {
   const isCurrent = isCurrentInChapterRange(played)(chapter)
 
   return (
-    <Chapters.List>
+    <Chapters.Row>
       <Chapters.Timestamp onClick={goToChapterCallback} showMarker={isCurrent}>
         <FormattedTime seconds={start} />
       </Chapters.Timestamp>
       <Chapters.Title>{title}</Chapters.Title>
-    </Chapters.List>
+    </Chapters.Row>
   )
 }
 

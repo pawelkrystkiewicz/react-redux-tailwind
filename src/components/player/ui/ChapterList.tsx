@@ -6,6 +6,7 @@ import { COLORS as C } from './colors'
 export const List: React.FunctionComponent<
   React.HTMLAttributes<StyledDIV>
 > = styled.div`
+  margin-top: 10px;
   font-size: 13px;
 `
 
@@ -16,7 +17,7 @@ export const Row: React.FunctionComponent<
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   align-content: center;
   column-gap: 10px;
 `
@@ -27,7 +28,8 @@ export const Timestamp: React.FunctionComponent<TimestampProps> = styled.span`
   color: ${C.THEME_COLOR};
   position: relative;
   cursor: pointer;
-  flex: 1;
+  width: 50px;
+  text-align: right;
 
   &:before {
     position: absolute;

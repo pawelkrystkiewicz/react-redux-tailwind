@@ -8,23 +8,26 @@ const { YT_RED, BLACK_ALPHA, GREY_ALPHA } = COLORS
 
 interface ChaptersProgressBarProps {
   chapters: MeasuredChapter[]
-  current: number
-  playedSeconds: number
+  duration: number
+  progressPercent: number
+  background: string
 }
 
 interface SeekerBarProps {
+  loaded: number
   current: number
+  duration: number
   chapters: MeasuredChapter[]
-  playedSeconds: number
   onChange: (sliderPosition: number) => void
   onChangeStart: (sliderPosition: number) => void
   onChangeEnd: () => void
 }
 
 const SeekerBar = ({
+  loaded,
   current,
   chapters,
-  playedSeconds,
+  duration,
   onChange,
   onChangeStart,
   onChangeEnd,
@@ -38,11 +41,12 @@ const SeekerBar = ({
     <Slider
       direction={Direction.HORIZONTAL}
       style={{
-        width: '100%',
+        width: 'auto',
         height: 4,
         borderRadius: 0,
         transition: 'width 0.1s',
         flex: '1 100%',
+        margin: '0 12px',
       }}
       onIntent={setLastIntent}
       onIntentStart={setLastIntent}
@@ -54,17 +58,38 @@ const SeekerBar = ({
       {hasChapters ? (
         <ChaptersBaseBar chapters={chapters} />
       ) : (
-        <Bar value={1} background={COLORS.GREY_ALPHA} />
+        <Bar value={1} background={GREY_ALPHA} />
       )}
-      <Bar value={lastIntent} background={GREY_ALPHA} />
+
       {hasChapters ? (
         <ChaptersProgressBar
           chapters={chapters}
-          current={current}
-          playedSeconds={playedSeconds}
+          duration={duration}
+          progressPercent={lastIntent}
+          background={GREY_ALPHA}
         />
       ) : (
-        <Bar value={current} background={COLORS.YT_RED} />
+        <Bar value={lastIntent} background={GREY_ALPHA} />
+      )}
+      {hasChapters ? (
+        <ChaptersProgressBar
+          chapters={chapters}
+          duration={duration}
+          progressPercent={loaded}
+          background={GREY_ALPHA}
+        />
+      ) : (
+        <Bar value={loaded} background={GREY_ALPHA} />
+      )}
+      {hasChapters ? (
+        <ChaptersProgressBar
+          chapters={chapters}
+          progressPercent={current}
+          duration={duration}
+          background={YT_RED}
+        />
+      ) : (
+        <Bar value={current} background={YT_RED} />
       )}
       <Dot value={current} />
     </Slider>
@@ -81,12 +106,13 @@ const ChaptersBaseBar = ({ chapters }: { chapters: MeasuredChapter[] }) => (
 
 const ChaptersProgressBar = ({
   chapters,
-  current,
-  playedSeconds,
+  duration,
+  progressPercent,
+  background,
 }: ChaptersProgressBarProps) => {
-  const finishedChapters = chapters.filter(
-    ({ end }: MeasuredChapter) => end < playedSeconds
-  )
+  const currentSeconds = duration * progressPercent
+  const finishedChapters = chapters.filter(({ end }) => end < currentSeconds)
+
   const chaptersLengthPercent = finishedChapters.reduce(
     (acc, chapter) => acc + chapter.size,
     0
@@ -95,9 +121,12 @@ const ChaptersProgressBar = ({
   return (
     <ChaptersContainer>
       {finishedChapters.map(({ size }) => (
-        <Chapter value={size} background={YT_RED} />
+        <Chapter value={size} background={background} />
       ))}
-      <Chapter value={current - chaptersLengthPercent} background={YT_RED} />
+      <Chapter
+        value={progressPercent - chaptersLengthPercent}
+        background={background}
+      />
     </ChaptersContainer>
   )
 }

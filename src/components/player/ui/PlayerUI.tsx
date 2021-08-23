@@ -55,13 +55,12 @@ export const ControlPanel: React.FunctionComponent<StyledDIV> = styled.div`
     rgba(0, 0, 0, 0.5) 100%
   );
   height: 40px;
+  margin: 0 12px;
 `
 
 export const Controls: React.FunctionComponent<StyledDIV> = styled.div`
   height: 100%;
-
   flex: 1;
-
   display: flex;
   flex-wrap: nowrap;
   column-gap: 5px;
@@ -81,7 +80,6 @@ export const Settings: React.FunctionComponent<StyledDIV> = styled.div`
   flex-direction: row;
   justify-content: space-between;
   float: right;
-  /* flex: 2; */
 `
 
 export enum ButtonIcon {

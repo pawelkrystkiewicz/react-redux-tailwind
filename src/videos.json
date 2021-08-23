@@ -76,6 +76,7 @@
   "youtube_without_chapters": {
     "playlist": null,
     "clip": {
+      "cover": "image url here",
       "title": "YouTube video",
       "url": "https://youtu.be/K4THpdaJoQI?list=PLd5GCd1nrmcy5CCUz2x9hVE2bo2L0RKsQ"
     }
@@ -83,6 +84,7 @@
   "mp4": {
     "playlist": null,
     "clip": {
+      "cover": "image url here",
       "title": "Hosted MP4 video",
       "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4",
       "chapters": [
@@ -93,21 +95,32 @@
   },
   "playlist": {
     "clip": null,
-    "playlist": [
-      {
-        "order": 1,
-        "title": "Clip 1",
-        "start": 200,
-        "end": 1217,
-        "url": "youtbe.com/ahfalsfgl"
-      },
-      {
-        "order": 2,
-        "title": "Clip 2",
-        "start": 400,
-        "end": 1217,
-        "url": "youtbe.com/ahfalsfgl"
-      }
-    ]
+    "playlist": {
+      "title": "Jezus Barankiem i Lwem",
+      "cover": "https://tajemnyplan.pl/wp-content/uploads/2017/09/tp_logo.jpg",
+      "clips": [
+        {
+          "order": 1,
+          "title": "Którego powrotu Jezusa oczekujemy i jak go oczekiwać?",
+          "start": 185,
+          "end": 1265,
+          "url": "https://youtu.be/P7NOkGLQziU"
+        },
+        {
+          "order": 2,
+          "title": "Dlaczego Krew Jezusa jest najlepszym lekarstwem na odkupienie świata?",
+          "start": 580,
+          "end": 762,
+          "url": "https://youtu.be/HlulEnH-qfk"
+        },
+        {
+          "order": 3,
+          "title": "Miłujmy uczynkiem i prawdą",
+          "start": 6039,
+          "end": 6755,
+          "url": "https://youtu.be/1lmJWHnwEWQ"
+        }
+      ]
+    }
   }
 }

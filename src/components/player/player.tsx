@@ -1,61 +1,57 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ReactPlayer, { ReactPlayerProps } from 'react-player/lazy'
 import ChaptersList from './ChaptersList'
 import Controls from './Controls'
-import { getCurrentChapter, measureChapters, toProgressPercent } from './helper'
-import { ReactComponent as PauseIcon } from './icons/pause.svg'
-import { ReactComponent as PlayIcon } from './icons/play.svg'
-import { ReactComponent as VolumeFullIcon } from './icons/volume-full.svg'
-import { ReactComponent as VolumeHalfIcon } from './icons/volume-half.svg'
-import { ReactComponent as VolumeMutedIcon } from './icons/volume-muted.svg'
+import { getCurrentChapter, measureChapters } from './helper'
 import SeekerBar from './SeekerBar'
 import Settings from './Settings'
 import { KeyCode } from './shortcuts'
-import TimeTracker from './TimeTracker'
 import { PlayerConfig, PlayerProgress, PlayerState } from './types/types'
 import { PlayerContainer } from './ui/Container'
 import * as PlayerUI from './ui/PlayerUI'
-import VolumeBar from './VolumeBar'
+import config from './config'
 
-const VOLUME_STEP = 0.05
-const REWIND_STEP = 5
+const { INITIAL_STATE, VOLUME_STEP, REWIND_STEP } = config
 
-const INITIAL_STATE: PlayerState = {
-  loadedSeconds: 0,
-  playedSeconds: 0,
-  loaded: 0,
-  played: 0,
-  current: 0,
-  duration: 0,
-  progress: 0,
-  volume: 1,
-  prevVolume: 1,
-  playbackRate: 1,
-  buffering: false,
-  seeking: false,
-  playing: false,
-  controls: false,
-  muted: false,
-  loop: false,
+type SourceState = {
+  clips: {
+    order: number
+    start: number
+    end: number
+    sources: {
+      priority: number
+      src: string
+      name?: string
+    }[]
+  }[]
+  current?: {
+    src?: string
+    id?: string
+  }
 }
 
 const Player: React.FunctionComponent<PlayerConfig> = media => {
-  const [state, setState] = useState<PlayerState>(INITIAL_STATE)
   const playerRef = useRef<ReactPlayer>(null)
+  const [state, setState] = useState<PlayerState>(INITIAL_STATE)
+
+  const [source, setSource] = useState<SourceState>({ clips: [] })
 
   /* EVENTS of react-player */
   const onDuration = (duration: number): void =>
     setState({ ...state, duration })
   const onProgress = (progress: PlayerProgress): void => {
-    const payload = {
-      ...progress,
-      progress: toProgressPercent(progress.played),
+    let payload: PlayerState = { ...state, ...progress }
+
+    if (!state.seeking) {
+      payload.current = progress.played
+      /* When seeking we want progress indicator to follow user input
+         When playing we update this with actual played % value
+      */
     }
 
-    !state.seeking && (payload.current = progress.played)
-
-    setState({ ...state, ...payload })
+    setState(payload)
   }
+
   const onEnded = (): void => {
     console.log('end of file')
   }
@@ -65,16 +61,24 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
   const onBufferEnd = (): void => setState({ ...state, buffering: false })
 
   /* PROGRESS BAR functions  */
-  const handleSeekerChange = (sliderPosition: number): void => {
+  const handleSeekerChange = (sliderPosition: number): void =>
     setState({ ...state, current: sliderPosition })
-  }
+
   const handleSeekerChangeStart = (sliderPosition: number): void => {
-    setState({ ...state, seeking: false, playing: true })
     seekInVideo(sliderPosition)
+    setState({
+      ...state,
+      seeking: true,
+      playing: false,
+      current: sliderPosition,
+    })
   }
-  const handleSeekerChangeEnd = (): void => {
-    setState({ ...state, seeking: true })
-  }
+  const handleSeekerChangeEnd = (): void =>
+    setState({
+      ...state,
+      seeking: false,
+      playing: true,
+    })
 
   /* BASIC CONTROLS */
   const togglePlay = (): void => setState({ ...state, playing: !state.playing })
@@ -90,12 +94,16 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     setState({ ...state, playbackRate })
 
   /* POSITION */
+  const seekInVideo = (secondsOrPercent: number): void | null => {
+    playerRef.current && playerRef.current.seekTo(secondsOrPercent)
+    // secondsOrPercent < 1 && handleSeekerChange(secondsOrPercent)
+  }
   const jumpForward = (): void | null =>
     seekInVideo(state.playedSeconds + REWIND_STEP)
   const jumpBackward = (): void | null =>
     seekInVideo(state.playedSeconds - REWIND_STEP)
-  const seekInVideo = (secondsOrPercent: number): void | null =>
-    playerRef.current && playerRef.current.seekTo(secondsOrPercent)
+  const jumpToStart = (): void | null => seekInVideo(0)
+  const jumpToEnd = (): void | null => seekInVideo(state.duration)
 
   /* VOLUME */
   const changeVolume = (volume: number): void => {
@@ -136,6 +144,12 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
       case KeyCode.K:
         togglePlay()
         break
+      case KeyCode.Home:
+        jumpToStart()
+        break
+      case KeyCode.End:
+        jumpToEnd()
+        break
 
       default:
         break
@@ -153,7 +167,6 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     onBuffer,
     onBufferEnd,
     onEnded,
-
     youtube: {
       embedOptions: {},
       playerVars: {
@@ -164,63 +177,68 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     },
   }
 
-  if (media.playlist) {
-    return <div>Playlist: TODO</div>
-  }
+  useEffect(() => {
+    console.log('useEffect')
+    if (media.__mode === 'clip') {
+      setState({ ...state, title: media.clip.title, url: media.clip.url })
+    }
+    if (media.__mode === 'playlist') {
+      setState({
+        ...state,
+        title: media.playlist.title,
+        url: media.playlist.clips[0].url,
+      })
+    }
+  }, [])
 
-  if (media.clip) {
-    const { title, url } = media.clip
-    const chapters = measureChapters(state.duration, media.clip.chapters)
-    const currentChapter = getCurrentChapter(chapters, state.playedSeconds)
-    return (
-      <PlayerContainer onKeyDownCapture={handleKeyboardShortcut} tabIndex={0}>
-        {title && <h2>{title}</h2>}
-
-        <PlayerUI.Body>
-          <PlayerUI.ClickCatcher onClick={togglePlay}>
-            <ReactPlayer
-              {...playerConfig}
-              url={url}
-              playing={state.playing}
-              controls={state.controls}
-              playbackRate={state.playbackRate}
-              volume={state.volume}
-              muted={state.muted}
-              config={playerConfig.config}
-            />
-          </PlayerUI.ClickCatcher>
-          <PlayerUI.Container>
-            <SeekerBar
-              current={state.current}
-              chapters={chapters}
-              onChange={handleSeekerChange}
-              onChangeEnd={handleSeekerChangeEnd}
-              onChangeStart={handleSeekerChangeStart}
-              playedSeconds={state.playedSeconds}
-            />
-            <PlayerUI.ControlPanel>
-              <Controls
-                state={state}
-                currentChapter={currentChapter}
-                onTogglePlay={togglePlay}
-                onToggleMute={toggleMute}
-                onVolumeChange={changeVolume}
-              />
-              <Settings />
-            </PlayerUI.ControlPanel>
-          </PlayerUI.Container>
-        </PlayerUI.Body>
-        <ChaptersList
-          chapters={chapters}
-          played={state.playedSeconds}
-          goToChapter={seekInVideo}
-        />
-      </PlayerContainer>
-    )
-  }
+  const chapters = measureChapters(state.duration, media.clip?.chapters)
+  const currentChapter = getCurrentChapter(chapters, state.playedSeconds)
 
   return (
-    <div>{"You can't reach this | TypeScript is stupid sometimes :)"} </div>
+    <PlayerContainer onKeyDownCapture={handleKeyboardShortcut} tabIndex={0}>
+      {state.title && <h2>{state.title}</h2>}
+
+      <PlayerUI.Body>
+        <PlayerUI.ClickCatcher onClick={togglePlay}>
+          <ReactPlayer
+            {...playerConfig}
+            url={state.url}
+            playing={state.playing}
+            controls={state.controls}
+            playbackRate={state.playbackRate}
+            volume={state.volume}
+            muted={state.muted}
+            config={playerConfig.config}
+          />
+        </PlayerUI.ClickCatcher>
+        <PlayerUI.Container>
+          <SeekerBar
+            duration={state.duration}
+            current={state.current}
+            loaded={state.loaded}
+            chapters={chapters}
+            onChange={handleSeekerChange}
+            onChangeEnd={handleSeekerChangeEnd}
+            onChangeStart={handleSeekerChangeStart}
+          />
+          <PlayerUI.ControlPanel>
+            <Controls
+              state={state}
+              currentChapter={currentChapter}
+              onTogglePlay={togglePlay}
+              onToggleMute={toggleMute}
+              onVolumeChange={changeVolume}
+            />
+            <Settings />
+          </PlayerUI.ControlPanel>
+        </PlayerUI.Container>
+      </PlayerUI.Body>
+      <ChaptersList
+        chapters={chapters}
+        played={state.playedSeconds}
+        goToChapter={seekInVideo}
+      />
+    </PlayerContainer>
   )
 }
 

@@ -10,7 +10,6 @@ export type PlayerProgress = {
 
 export type PlayerState = PlayerProgress & {
   current: number
-  progress: number
   duration: number
   playing: boolean
   controls: boolean
@@ -21,6 +20,8 @@ export type PlayerState = PlayerProgress & {
   loop: boolean
   seeking: boolean
   buffering: boolean
+  title?: string
+  url?: string
 }
 
 export type Marks = { [key: number]: string }
@@ -35,21 +36,27 @@ export type OnlyClip = {
 
 export type OnlyPlaylist = {
   clip?: null
-  playlist: PlaylistElement[]
+  playlist: Playlist
   __mode: 'playlist'
 }
 
 export type Clip = {
   title: string
   url: string
+  cover?: string
   chapters?: Chapter[]
 }
-
-export type PlaylistElement = {
+export type Playlist = {
+  title: string
+  cover?: string
+  clips: PlaylistClip[]
+}
+export type PlaylistClip = {
   title: string
   start: number
   end: number
   url: string
+  chapters?: Chapter[]
 }
 
 export type Chapter = {
