@@ -7,7 +7,7 @@ import { getId } from './utils'
 
 import videos from './videos.json'
 import { OnlyClip, OnlyPlaylist } from './components/player/types/types'
-import Player from './components/player/Player'
+import Player from './components/player/player'
 import LagRadar from 'react-lag-radar'
 type TaskListProps = {
   tasks: Task[]
