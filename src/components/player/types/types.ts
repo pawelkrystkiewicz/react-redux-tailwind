@@ -22,6 +22,7 @@ export type PlayerState = PlayerProgress & {
   buffering: boolean
   title?: string
   url?: string
+  error?: string
 }
 
 export type Marks = { [key: number]: string }
@@ -42,21 +43,25 @@ export type OnlyPlaylist = {
 
 export type Clip = {
   title: string
-  url: string
   cover?: string
   chapters?: Chapter[]
+  sources: VideoSource[]
 }
+
 export type Playlist = {
   title: string
   cover?: string
   clips: PlaylistClip[]
 }
+
 export type PlaylistClip = {
   title: string
   start: number
   end: number
-  url: string
+  order: number
+  cover?: string
   chapters?: Chapter[]
+  sources: VideoSource[]
 }
 
 export type Chapter = {
@@ -72,4 +77,16 @@ export type SliderCommonProps = {
   background?: string
   direction?: Direction
   z?: number
+}
+
+export type VideoSource = {
+  priority: number
+  url: string
+  name?: string
+}
+
+export type CurrentSource = {
+  url: string
+  orderId: number
+  priorityId: number
 }

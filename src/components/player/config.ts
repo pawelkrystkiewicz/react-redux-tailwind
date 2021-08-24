@@ -1,12 +1,14 @@
 import { PlayerState } from './types/types'
 
 type Config = {
+  FALLBACK_PLAYLIST_IMG: string
   INITIAL_STATE: PlayerState
   VOLUME_STEP: number
   REWIND_STEP: number
 }
 
 const config: Config = {
+  FALLBACK_PLAYLIST_IMG: './images/fallback-black.png',
   VOLUME_STEP: 0.05,
   REWIND_STEP: 5,
   INITIAL_STATE: {

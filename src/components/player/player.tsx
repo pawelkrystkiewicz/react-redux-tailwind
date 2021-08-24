@@ -6,39 +6,34 @@ import { getCurrentChapter, measureChapters } from './helper'
 import SeekerBar from './SeekerBar'
 import Settings from './Settings'
 import { KeyCode } from './shortcuts'
-import { PlayerConfig, PlayerProgress, PlayerState } from './types/types'
+import {
+  Clip,
+  CurrentSource,
+  PlayerConfig,
+  PlayerProgress,
+  PlayerState,
+  Playlist,
+  PlaylistClip,
+  VideoSource,
+} from './types/types'
 import { PlayerContainer } from './ui/Container'
 import * as PlayerUI from './ui/PlayerUI'
 import config from './config'
+import FormattedTime from './FormattedTime'
+import * as PlaylistUI from './ui/PlaylistUI'
+import { PlaylistList } from './PlaylistList'
 
 const { INITIAL_STATE, VOLUME_STEP, REWIND_STEP } = config
-
-type SourceState = {
-  clips: {
-    order: number
-    start: number
-    end: number
-    sources: {
-      priority: number
-      src: string
-      name?: string
-    }[]
-  }[]
-  current?: {
-    src?: string
-    id?: string
-  }
-}
 
 const Player: React.FunctionComponent<PlayerConfig> = media => {
   const playerRef = useRef<ReactPlayer>(null)
   const [state, setState] = useState<PlayerState>(INITIAL_STATE)
-
-  const [source, setSource] = useState<SourceState>({ clips: [] })
+  const [source, setSource] = useState<CurrentSource | null>(null)
 
   /* EVENTS of react-player */
   const onDuration = (duration: number): void =>
     setState({ ...state, duration })
+
   const onProgress = (progress: PlayerProgress): void => {
     let payload: PlayerState = { ...state, ...progress }
 
@@ -49,11 +44,11 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
       */
     }
 
-    setState(payload)
-  }
+    if (media.__mode === 'playlist') {
+      onProgressPlaylist(progress.playedSeconds)
+    }
 
-  const onEnded = (): void => {
-    console.log('end of file')
+    setState(payload)
   }
 
   /* LOADING / BUFFERING */
@@ -166,7 +161,6 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     onDuration,
     onBuffer,
     onBufferEnd,
-    onEnded,
     youtube: {
       embedOptions: {},
       playerVars: {
@@ -177,17 +171,81 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
     },
   }
 
+  const showErrorOnInvalidSources = (): void =>
+    setState({
+      ...state,
+      error:
+        'Wystąpił błąd i nie możemy odtworzyć tego wideo. Skontaktuj się z nami.',
+    })
+
+  const getValidSource = (sources: VideoSource[]): VideoSource | undefined =>
+    sources
+      .sort((a, b) => a.priority - b.priority)
+      .find(({ url }) => ReactPlayer.canPlay(url))
+
+  const setValidSourceOrError = (sources: VideoSource[], orderId: number) => {
+    const firstValidSource = getValidSource(sources)
+    console.log('firstValidSource', !!firstValidSource)
+    if (firstValidSource) {
+      setSource({
+        orderId,
+        priorityId: firstValidSource.priority,
+        url: firstValidSource.url,
+      })
+    } else {
+      showErrorOnInvalidSources()
+    }
+  }
+  // SOURCE HANDLING
+  const initClip = (clip: Clip) => {
+    setState({ ...state, title: clip.title })
+    setValidSourceOrError(clip.sources, 1)
+  }
+
+  const initPlaylist = (playlist: Playlist) => {
+    setState({ ...state, title: playlist.title })
+    const firstClip = playlist.clips.filter(({ order }) => order === 1)[0]
+    setValidSourceOrError(firstClip.sources, firstClip.order)
+  }
+  // PLAYLIST FEATURES
+  const onProgressPlaylist = (seconds: number) => {
+    console.log(seconds)
+    const currentClip = getCurrentPlaylistClip()
+    if (currentClip) {
+      const { start, end } = currentClip
+      console.log(start, seconds < start)
+      console.log(end, seconds >= end)
+      seconds < start && seekInVideo(start)
+      seconds >= end && playlistNext()
+    }
+  }
+
+  const getCurrentPlaylistClip = (): PlaylistClip | undefined => {
+    const { playlist } = media
+    if (source && playlist) {
+      return playlist.clips.find(({ order }) => order === source.orderId)
+    }
+  }
+
+  const jumpToPlaylistClip = (orderId: number) => {
+    const { playlist } = media
+    if (source && playlist) {
+      const clip: PlaylistClip = playlist.clips.filter(
+        ({ order }) => order === orderId
+      )[0]
+      clip && setValidSourceOrError(clip.sources, clip.order)
+    }
+  }
+  const playlistNext = () => jumpToPlaylistClip(source!.orderId + 1)
+  const playlistPrevious = () => jumpToPlaylistClip(source!.orderId - 1)
+
   useEffect(() => {
     console.log('useEffect')
     if (media.__mode === 'clip') {
-      setState({ ...state, title: media.clip.title, url: media.clip.url })
+      initClip(media.clip)
     }
     if (media.__mode === 'playlist') {
-      setState({
-        ...state,
-        title: media.playlist.title,
-        url: media.playlist.clips[0].url,
-      })
+      initPlaylist(media.playlist)
     }
   }, [])
 
@@ -197,12 +255,20 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
   return (
     <PlayerContainer onKeyDownCapture={handleKeyboardShortcut} tabIndex={0}>
       {state.title && <h2>{state.title}</h2>}
+      {media.__mode === 'playlist' && (
+        <PlaylistList
+          onClick={jumpToPlaylistClip}
+          clips={media.playlist.clips}
+          source={source}
+
+        />
+      )}
 
       <PlayerUI.Body>
         <PlayerUI.ClickCatcher onClick={togglePlay}>
           <ReactPlayer
             {...playerConfig}
-            url={state.url}
+            url={source?.url ?? ''}
             playing={state.playing}
             controls={state.controls}
             playbackRate={state.playbackRate}
@@ -238,6 +304,9 @@ const Player: React.FunctionComponent<PlayerConfig> = media => {
         played={state.playedSeconds}
         goToChapter={seekInVideo}
       />
+      {state.error && (
+        <PlayerUI.ErrorMessage>{state.error}</PlayerUI.ErrorMessage>
+      )}
     </PlayerContainer>
   )
 }

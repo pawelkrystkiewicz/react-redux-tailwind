@@ -107,8 +107,16 @@ export const Button: React.FunctionComponent<PlayerButtonProps> = styled.button`
     !icon ? `` : `::before {content: url("icons/${icon}.svg");}`}
 `
 
-export const TimeTracker: React.FunctionComponent<PlayerButtonProps> = styled.button`
+export const TimeTracker: React.FunctionComponent<PlayerButtonProps> = styled.div`
   padding: 0 2px;
 `
 
 export const ClickCatcher: React.FunctionComponent<StyledDIV> = styled.div``
+
+export const ErrorMessage: React.FunctionComponent<StyledDIV> = styled.div`
+  color: rgba(218, 22, 22, 0.527);
+  font-size: 14px;
+  padding: 20px;
+  border: 1px solid rgba(218, 22, 22, 1);
+  margin-top: 10px;
+`

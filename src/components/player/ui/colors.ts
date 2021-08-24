@@ -2,8 +2,8 @@ export const COLORS = {
   YT_RED: '#ff0000',
   GREY_ALPHA: 'rgba(50, 50, 50, 0.2)',
   BLACK_ALPHA: 'rgba(0, 0, 0, 0.2)',
-  BLUE: 'rgba(0, 0, 0, 0.2)',
   WHITE: '#FFF',
+  BLUE: '#45AEFF',
   THEME_COLOR:"#1953a8"
 }
 

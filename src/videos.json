@@ -3,7 +3,24 @@
     "playlist": null,
     "clip": {
       "title": "YouTube video",
-      "url": "https://www.youtube.com/watch?v=bSIc5pBMKN8",
+
+      "sources": [
+        {
+          "priority": 1,
+          "url": "https://www.youtube.com/watch?v=bSIc5pBMKN8",
+          "name": "YT"
+        },
+        {
+          "priority": 2,
+          "url": "https://www.youtube.com/watch?v=",
+          "name": "Vimeo"
+        },
+        {
+          "priority": 2,
+          "url": "https://www.youtube.com/watch?v=bSIc5pBMKN8",
+          "name": "File"
+        }
+      ],
       "chapters": [
         {
           "start": 0,
@@ -78,7 +95,23 @@
     "clip": {
       "cover": "image url here",
       "title": "YouTube video",
-      "url": "https://youtu.be/K4THpdaJoQI?list=PLd5GCd1nrmcy5CCUz2x9hVE2bo2L0RKsQ"
+      "sources": [
+        {
+          "priority": 1,
+          "url": "https://youtu.be/K4THpdaJoQI?list=PLd5GCd1nrmcy5CCUz2x9hVE2bo2L0RKsQ",
+          "name": "YT"
+        },
+        {
+          "priority": 2,
+          "url": "https://youtu.be/K4THpdaJoQI?list=PLd5GCd1nrmcy5CCUz2x9hVE2bo2L0RKsQ",
+          "name": "Vimeo"
+        },
+        {
+          "priority": 2,
+          "url": "https://youtu.be/K4THpdaJoQI?list=PLd5GCd1nrmcy5CCUz2x9hVE2bo2L0RKsQ",
+          "name": "File"
+        }
+      ]
     }
   },
   "mp4": {
@@ -86,7 +119,13 @@
     "clip": {
       "cover": "image url here",
       "title": "Hosted MP4 video",
-      "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4",
+      "sources": [
+        {
+          "priority": 1,
+          "url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4",
+          "name": "YT"
+        }
+      ],
       "chapters": [
         { "title": "Chapter 1", "start": 50, "end": 120 },
         { "title": "Chapter 2", "start": 120, "end": 200 }
@@ -102,23 +141,45 @@
         {
           "order": 1,
           "title": "Którego powrotu Jezusa oczekujemy i jak go oczekiwać?",
+          "cover": "https://images.unsplash.com/photo-1561448817-bb90ab1327b5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
           "start": 185,
           "end": 1265,
-          "url": "https://youtu.be/P7NOkGLQziU"
+          "url": "https://youtu.be/P7NOkGLQziU",
+          "sources": [
+            {
+              "priority": 1,
+              "url": "https://youtu.be/P7NOkGLQziU",
+              "name": "YT"
+            }
+          ]
         },
         {
           "order": 2,
           "title": "Dlaczego Krew Jezusa jest najlepszym lekarstwem na odkupienie świata?",
+          "cover": "https://images.unsplash.com/photo-1504087825736-ec698faffd4c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1951&q=80",
           "start": 580,
           "end": 762,
-          "url": "https://youtu.be/HlulEnH-qfk"
+          "sources": [
+            {
+              "priority": 1,
+              "url": "https://youtu.be/HlulEnH-qfk",
+              "name": "YT"
+            }
+          ]
         },
         {
           "order": 3,
           "title": "Miłujmy uczynkiem i prawdą",
+          "cover": "https://images.unsplash.com/photo-1507692049790-de58290a4334?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
           "start": 6039,
           "end": 6755,
-          "url": "https://youtu.be/1lmJWHnwEWQ"
+          "sources": [
+            {
+              "priority": 1,
+              "url": "https://youtu.be/1lmJWHnwEWQ",
+              "name": "YT"
+            }
+          ]
         }
       ]
     }
